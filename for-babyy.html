@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A message for you 💌</title>
+<style>
+:root{--bg:#fff1f2;--card:#ffffff;--ink:#4a1d2c;--muted:#9b6b7a;--accent:#e11d48;--accent2:#fb7185;--line:#fecdd3;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1f0d14;--card:#2c141d;--ink:#ffe4e9;--muted:#d29aa9;--accent:#fb7185;--accent2:#e11d48;--line:#4a2330}}
+:root[data-theme="dark"]{--bg:#1f0d14;--card:#2c141d;--ink:#ffe4e9;--muted:#d29aa9;--accent:#fb7185;--accent2:#e11d48;--line:#4a2330}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;overflow-x:hidden}
+.wrap{max-width:480px;margin:0 auto;padding:28px 20px 48px;position:relative;z-index:2}
+h1{font-size:28px;margin:8px 0 4px;text-align:center}
+.sub{text-align:center;color:var(--muted);margin:0 0 22px;font-size:15px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 8px 30px rgba(225,29,72,.10)}
+label{display:block;font:600 13px system-ui,sans-serif;color:var(--muted);margin:14px 0 6px}
+input,textarea{width:100%;font:16px Georgia,serif;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px}
+textarea{min-height:130px;resize:vertical}
+input:focus,textarea:focus{outline:2px solid var(--accent2)}
+.emojis{display:flex;gap:8px;flex-wrap:wrap}
+.emojis button{font-size:22px;background:var(--bg);border:2px solid var(--line);border-radius:12px;padding:6px 10px;cursor:pointer}
+.emojis button.on{border-color:var(--accent);background:var(--line)}
+.btn{display:block;width:100%;margin-top:18px;border:0;border-radius:14px;padding:14px;font:700 16px system-ui,sans-serif;color:#fff;background:linear-gradient(135deg,var(--accent2),var(--accent));cursor:pointer}
+.btn.alt{background:var(--bg);color:var(--accent);border:1px solid var(--line);margin-top:10px}
+#result{display:none;margin-top:20px}
+#linkbox{font:13px ui-monospace,monospace}
+.msg{text-align:center}
+.env{font-size:96px;cursor:pointer;display:inline-block;animation:bob 2s ease-in-out infinite;user-select:none}
+@keyframes bob{50%{transform:translateY(-10px) scale(1.05)}}
+.letter{display:none;animation:rise .9s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.letter .to{font-size:24px;color:var(--accent);margin:0 0 12px}
+.letter p.body{white-space:pre-wrap;font-size:19px;line-height:1.6;margin:0 0 18px;text-align:left}
+.letter .from{font-style:italic;color:var(--muted);text-align:right;font-size:18px}
+.big{font-size:44px}
+.fl{position:fixed;bottom:-40px;font-size:24px;opacity:.7;pointer-events:none;z-index:1;animation:fly linear forwards}
+@keyframes fly{to{transform:translateY(-115vh) rotate(25deg);opacity:0}}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font:600 14px system-ui,sans-serif;opacity:0;transition:.3s;z-index:9;pointer-events:none}
+#toast.show{opacity:1}
+body{background:radial-gradient(circle at 15% 10%,var(--line) 0,transparent 38%),radial-gradient(circle at 90% 85%,var(--line) 0,transparent 40%),var(--bg);background-attachment:fixed}
+.card{border:2px dashed var(--accent2);border-radius:28px}
+h1{color:var(--accent)}
+.mascot{text-align:center;font-size:64px;animation:bob 2.4s ease-in-out infinite}
+.ask{font-size:21px;margin:22px 0 0;color:var(--accent)}
+.btnrow{display:flex;gap:16px;justify-content:center;align-items:center;margin-top:28px;min-height:70px}
+.yes,.no{font:700 17px system-ui,sans-serif;border-radius:999px;padding:14px 26px;cursor:pointer;transition:transform .25s}
+.yes{border:0;color:#fff;background:linear-gradient(135deg,var(--accent2),var(--accent));box-shadow:0 6px 18px rgba(225,29,72,.35)}
+.no{background:var(--card);color:var(--muted);border:2px solid var(--line)}
+.no.run{position:fixed;z-index:5;transition:left .2s,top .2s}
+.btn{border-radius:999px}
+.btnrow{flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- Creator view -->
+  <div id="make">
+    <div class="mascot">🧸</div><h1>Send Some Love 💌</h1>
+    <p class="sub">Write a message, get a link, share it with someone you love.</p>
+    <div class="card">
+      <label for="to">Who is it for?</label>
+      <input id="to" maxlength="40" placeholder="e.g. Mama, Mahal, Lola…">
+      <label for="text">Your message</label>
+      <textarea id="text" maxlength="800" placeholder="Write something from the heart…"></textarea>
+      <label for="from">From</label>
+      <input id="from" maxlength="40" placeholder="Your name">
+      <label>Pick an emoji</label>
+      <div class="emojis" id="emojis"></div>
+      <button class="btn" id="gen">Create my link</button>
+      <div id="result">
+        <label for="linkbox">Your shareable link</label>
+        <input id="linkbox" readonly>
+        <button class="btn" id="copy">Copy link</button>
+        <button class="btn alt" id="share">Share…</button>
+        <button class="btn alt" id="preview">Preview</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Viewer -->
+  <div id="view" class="msg" style="display:none">
+    <div id="closed">
+      <h1 id="vhello" style="margin-top:40px"></h1>
+      <p class="sub">Someone made something special for you 💗</p>
+      <div class="env" id="env">💌</div>
+      <p class="ask" id="ask"></p>
+      <div class="btnrow" id="opts"></div>
+    </div>
+    <div class="letter card" id="letter">
+      <div class="big" id="vemoji"></div>
+      <h2 class="to" id="vto"></h2>
+      <p class="body" id="vbody"></p>
+      <div class="from" id="vfrom"></div>
+    </div>
+    <button class="btn alt" id="mk" style="display:none;margin-top:24px">Make one for someone you love</button>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+var EM=["❤️","🌹","🥰","🌸","✨","🫶","🎁","🌈"];
+var pick=EM[0];
+var $=function(i){return document.getElementById(i)};
+function toast(t){var e=$("toast");e.textContent=t;e.classList.add("show");setTimeout(function(){e.classList.remove("show")},1800)}
+function enc(o){return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function dec(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";return JSON.parse(decodeURIComponent(escape(atob(s))))}
+var STEPS=[
+{b:"🧸",q:"Do you want to continue? 🥺",o:[["Yes 💖",1,"yes"],["No 🙈",2,"no"]]},
+{b:"🥰",q:"Yay! But first... do you promise to smile? 😊",o:[["I promise 🥰",-1,"yes"],["Maybe 😝",-1,"no"]]},
+{b:"🥺",q:"Are you sure? 🥺",o:[["Yes, I'm sure 😤",3,"no"],["Okay, continue 💗",1,"yes"]]},
+{b:"🥹",q:"Please? I wrote it just for you 🥹",o:[["Okay, I'll read it 💗",1,"yes"],["Still no 😤",4,"no"]]},
+{b:"🎁",q:"Last chance... there's a surprise inside 🎁",o:[["Fine, show me 😘",1,"yes"],["No!! 🙅",5,"no"]]},
+{b:"😘",q:"Too bad, I'm opening it anyway 😘",o:null}
+];
+function openIt(){$("closed").style.display="none";$("letter").style.display="block";hearts(24);window.scrollTo(0,0)}
+function go(i){
+  if(i<0){openIt();return}
+  var s=STEPS[i];
+  $("env").textContent=s.b;$("ask").textContent=s.q;
+  var box=$("opts");box.innerHTML="";
+  if(!s.o){setTimeout(openIt,1500);return}
+  s.o.forEach(function(o){var b=document.createElement("button");b.className=o[2]=="yes"?"yes":"no";b.textContent=o[0];b.onclick=function(){go(o[1])};box.appendChild(b)});
+}
+function flow(){go(0)}
+function hearts(n){for(var i=0;i<n;i++){(function(i){setTimeout(function(){var f=document.createElement("div");f.className="fl";f.textContent=pick;f.style.left=Math.random()*95+"vw";f.style.fontSize=(16+Math.random()*26)+"px";f.style.animationDuration=(4+Math.random()*4)+"s";document.body.appendChild(f);setTimeout(function(){f.remove()},8500)},i*180)})(i)}}
+
+EM.forEach(function(e,i){var b=document.createElement("button");b.textContent=e;if(!i)b.className="on";b.onclick=function(){pick=e;[].forEach.call($("emojis").children,function(c){c.className=""});b.className="on"};$("emojis").appendChild(b)});
+
+function base(){return location.href.split("#")[0]}
+function show(d){
+  $("make").style.display="none";$("view").style.display="block";
+  pick=d.e||"❤️";
+  $("vhello").textContent=d.t?("For "+d.t+" "+pick):("For you "+pick);
+  $("vemoji").textContent=pick;
+  $("vto").textContent=d.t?("Dear "+d.t+","):"Hello,";
+  $("vbody").textContent=d.m||"";
+  $("vfrom").textContent=d.f?("— "+d.f):"";
+  document.title="A message for "+(d.t||"you")+" 💌";
+  $("mk").style.display="none";
+  var n=0,msgs=["No 🙈","Are you sure? 🥺","Pleaseee 🥹","Just a peek? 👉👈","Pretty please 🌸","Last chance 💗"];
+  function openIt(){$("closed").style.display="none";$("letter").style.display="block";hearts(24);window.scrollTo(0,0)}
+  function dodge(e){if(e)e.preventDefault();n++;var b=$("no"),y=$("yes");
+    if(n>=7){b.style.display="none";$("ask").textContent="Okay okay, I'll open it for you 😘";setTimeout(openIt,1300);return}
+    b.textContent=msgs[Math.min(n,msgs.length-1)];b.classList.add("run");
+    var w=b.offsetWidth,h=b.offsetHeight;
+    b.style.left=Math.max(8,Math.random()*(innerWidth-w-16))+"px";
+    b.style.top=Math.max(8,Math.random()*(innerHeight-h-16))+"px";
+    y.style.transform="scale("+(1+n*.1)+")";}
+  flow();
+  
+  
+  
+}
+$("mk").onclick=function(){history.replaceState(null,"",base());location.reload()};
+
+$("gen").onclick=function(){
+  var m=$("text").value.trim();
+  if(!m){toast("Write a message first 💗");$("text").focus();return}
+  var d={t:$("to").value.trim(),m:m,f:$("from").value.trim(),e:pick};
+  var link=base()+"#"+enc(d);
+  $("linkbox").value=link;$("result").style.display="block";
+  $("result").scrollIntoView({behavior:"smooth",block:"center"});
+  window._d=d;
+};
+$("copy").onclick=function(){
+  var b=$("linkbox");b.select();b.setSelectionRange(0,99999);
+  try{navigator.clipboard.writeText(b.value).then(function(){toast("Link copied ✓")},function(){document.execCommand("copy");toast("Link copied ✓")})}
+  catch(e){try{document.execCommand("copy");toast("Link copied ✓")}catch(x){toast("Press and hold to copy")}}
+};
+$("share").onclick=function(){
+  var l=$("linkbox").value;
+  if(navigator.share){navigator.share({title:"A message for you 💌",text:"I made something for you 💌",url:l}).catch(function(){})}
+  else $("copy").click();
+};
+$("preview").onclick=function(){show(window._d);window.scrollTo(0,0)};
+
+var DEFAULT={"t": "Babyy", "m": "Sorryy kung nagbago na ako at hindi na ako yung Kenneth na nakilala mo dati. Alam kong ikaw yung pinaka-naapektuhan sa mga pagbabago ko, and I'm really sorry for that. Gusto ko talagang bumalik sa dating Kenneth na minahal mo, and sana mabigyan mo pa ako ng chance na maipakita sa'yo na kaya kong magbago at maging katulad ulit ng dati. Sa totoo lang, hindi ko rin alam kung ano yung nangyayari sa sarili ko. Sobrang gulo lang talaga ng isip ko lately, pero alam kong hindi sapat na dahilan yun para masaktan kita.\n\nMiss ko na yung mga panahong okay tayo, yung panahong masaya tayo at wala tayong masyadong problema o conflict sa isa't isa. Miss ko na yung dating tayo, yung okay tayo kahit sa simpleng bagay lang. Pero ayoko namang bumalik lang tayo sa dati tapos mauulit lang ulit lahat ng nangyari sa atin. Gusto kong matuto sa mga pagkakamali ko, ayusin yung mga bagay na kailangan kong baguhin sa sarili ko, at maging mas mabuting partner para sa'yo. I don't want to keep making the same mistakes, babyy, kasi alam kong deserve mo yung pagmamahal na hindi ka palaging nasasaktan.\n\nHindi ko naman hinihiling na maging okay agad ang lahat sa atin. Gusto ko lang magkaroon ng chance na mapatunayan sa'yo, hindi lang sa mga salita ko kundi pati sa mga kilos ko, na kaya kong magbago at maging better para sa sarili ko at para sa relationship natin. Love na love kita, babyy, at gagawin ko yung best ko para maayos natin 'tong relationship natin. Alam kong may mga pagkukulang ako at ako rin yung naging dahilan ng maraming sakit na nararamdaman mo, kaya gusto kong akuin yung responsibility sa mga nagawa ko at hindi basta mangako lang na magbabago ako.\n\nSana hayaan mo rin akong bumawi sa'yo, kahit paunti-unti lang. Gusto kong mas matutunan kang intindihin, pakinggan, at mahalin sa paraang deserve mo. Sorry kung minsan ako pa yung dahilan kung bakit ka nasasaktan. Sorry kung may mga pagkakataong hindi kita naiintindihan kahit sinusubukan ko naman, at sorry rin kung minsan sumasagot ako sa'yo imbes na makinig at intindihin muna kung ano yung nararamdaman mo. Alam kong sa mga ganung pagkakataon, imbes na maayos natin yung problema, lalo lang lumalala dahil pareho tayong nasasaktan. Ayokong maging ganun tayo palagi, babyy. Gusto kong matuto kung paano makipag-usap sa'yo nang maayos, lalo na kapag may problema tayo.\n\nI'm sorryy sa lahat ng sakit na naidulot ko sa'yo. Hindi ko hinihiling na patawarin mo ako agad o kalimutan mo na lang lahat ng nangyari na parang walang nasaktan. Alam kong hindi ganun kadali yun, at naiintindihan ko kung kailangan mo ng time para maging okay ulit. Gusto kong patunayan sa'yo na seryoso akong magbago, hindi lang dahil natatakot akong mawala ka, kundi dahil nare-realize ko rin na may mga bagay akong kailangang ayusin sa sarili ko. Ayokong puro sorry lang ako tapos mauulit lang ulit yung mga pagkakamali ko. Gusto kong makita mo sa mga actions ko na sincere ako sa lahat ng sinasabi ko ngayon.\n\nBabyy, mahal na mahal kita, sobra sobra. Ayokong mawala yung relationship na meron tayo, lalo na alam kong marami pa tayong pwedeng ayusin at matutunan together. Hindi man maging madali yung process, willing akong matuto, umintindi, at bumawi sa'yo. Hindi ko man maibalik agad yung dating ako na nakilala mo, sana bigyan mo ako ng pagkakataong ipakita sa'yo na kaya kong maging mas mabuti kaysa sa dati. I want us to be okay again, pero this time, gusto kong mas maging maayos tayo, mas magkaintindihan, at hindi na basta-basta masira dahil sa mga pagkakamaling kaya naman nating matutunan.\n\nI love youuu so muchh, babyy. I'm really, really sorry sa lahat. Sana sa paglipas ng panahon, maramdaman mo ulit yung pagmamahal, effort, at sincerity na gusto kong ibigay sa'yo. Hindi ko ine-expect na maniwala ka agad sa lahat ng sinasabi ko, pero sana hayaan mo akong patunayan sa'yo, little by little, na seryoso ako sa pagbabago ko at sa pagmamahal ko sa'yo. Mahal na mahal kita, babyy, and I'm willing to do my part para maayos natin 'to.", "f": "Kenneth", "e": "❤️"};
+try{show(location.hash.length>1?dec(location.hash.slice(1)):DEFAULT)}catch(e){show(DEFAULT)}
+</script>
+</body>
+</html>
